@@ -7,13 +7,13 @@ public class IKJoint
 {
     // la position modifiée par l'algo : en fait la somme des positions des sous-branches. 
     // _weight comptera le nombre de sous-branches ayant touchées cette articulation.
-    private Vector3 _position;      
-    
+    private Vector3 _position;
+
     // un lien vers le Transform de l'arbre d'Unity
     private Transform _transform;
-    
+
     // un poids qui indique combien de fois ce point a été bougé par l'algo.
-    private float _weight = 0.0f;   
+    private float _weight = 0.0f;
 
 
     public string name

@@ -9,27 +9,27 @@ public class IKChain
 {
     // Quand la chaine comporte une cible pour la racine. 
     // Ce sera le cas que pour la chaine comportant le root de l'arbre.
-    private IKJoint rootTarget = null;                              
-    
+    private IKJoint rootTarget = null;
+
     // Quand la chaine à une cible à atteindre, 
     // ce ne sera pas forcément le cas pour toutes les chaines.
-    private IKJoint endTarget = null;                               
+    private IKJoint endTarget = null;
 
     // Toutes articulations (IKJoint) triées de la racine vers la feuille. N articulations.
-    private List<IKJoint> joints = new List<IKJoint>();             
-    
+    private List<IKJoint> joints = new List<IKJoint>();
+
     // Contraintes pour chaque articulation : la longueur (à modifier pour 
     // ajouter des contraintes sur les angles). N-1 contraintes.
-    private List<float> constraints = new List<float>();            
-    
-    
+    private List<float> constraints = new List<float>();
+
+
     // Un cylndre entre chaque articulation (Joint). N-1 cylindres.
     //private List<GameObject> cylinders = new List<GameObject>();    
 
 
 
     // Créer la chaine d'IK en partant du noeud endNode et en remontant jusqu'au noeud plus haut, ou jusqu'à la racine
-    public IKChain(Transform _endNode, Transform _rootTarget=null, Transform _endTarget=null)
+    public IKChain(Transform _endNode, Transform _rootTarget = null, Transform _endTarget = null)
     {
         Debug.Log("=== IKChain::createChain: ===");
         // TODO : construire la chaine allant de _endNode vers _rootTarget en remontant dans l'arbre. 
@@ -37,7 +37,8 @@ public class IKChain
 
         endTarget = new IKJoint(_endTarget);
 
-        while (_endNode != null) {
+        while (_endNode != null)
+        {
             joints.Add(new IKJoint(_endNode));
             if (_endNode == _rootTarget) //root in stuff ??
                 break;
@@ -62,7 +63,7 @@ public class IKChain
     }
     public IKJoint Last()
     {
-        return joints[ joints.Count-1 ];
+        return joints[joints.Count - 1];
     }
 
     public void Backward()
@@ -86,7 +87,8 @@ public class IKChain
     public void Check()
     {
         // TODO : des Debug.Log pour afficher le contenu de la chaine (ne sert que pour le debug)
-        foreach (IKJoint j in joints) {
+        foreach (IKJoint j in joints)
+        {
             Debug.Log(j.name + j.positionTransform);
         }
         Debug.Log("Target : " + endTarget.name + endTarget.positionTransform);

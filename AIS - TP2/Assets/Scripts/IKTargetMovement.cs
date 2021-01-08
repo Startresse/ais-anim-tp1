@@ -10,7 +10,7 @@ public class IKTargetMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -23,10 +23,10 @@ public class IKTargetMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.W))
             transform.position += Vector3.forward * speed;
         if (Input.GetKey(KeyCode.S))
-            transform.position += Vector3.back* speed;
+            transform.position += Vector3.back * speed;
         if (Input.GetKey(KeyCode.Space))
-            transform.position += Vector3.up* speed;
+            transform.position += Vector3.up * speed;
         if (Input.GetKey(KeyCode.LeftShift))
-            transform.position += Vector3.down* speed;
+            transform.position += Vector3.down * speed;
     }
 }
