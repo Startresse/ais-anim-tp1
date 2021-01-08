@@ -47,6 +47,14 @@ public class IKChain
 
         rootTarget = new IKJoint(_rootTarget);
 
+        joints.Reverse();
+
+        for (int i = 0; i < joints.Count - 1; ++i)
+        {
+            Vector3 diff = (joints[i].position - joints[i + 1].position);
+            constraints.Add(diff.magnitude);
+        }
+
     }
 
 
@@ -71,17 +79,29 @@ public class IKChain
         // TODO : une passe remontée de FABRIK. Placer le noeud N-1 sur la cible, 
         // puis on remonte du noeud N-2 au noeud 0 de la liste 
         // en résolvant les contrainte avec la fonction Solve de IKJoint.
+        Last().SetPosition(endTarget.transform.position);
+
+        for (int i = joints.Count - 2; i >= 0; --i)
+            joints[i].Solve(joints[i + 1], constraints[i]);
     }
 
     public void Forward()
     {
         // TODO : une passe descendante de FABRIK. Placer le noeud 0 sur son origine puis on descend.
         // Codez et deboguez déjà Backward avant d'écrire celle-ci.
+        First().SetPosition(rootTarget.position);
+
+        for (int i = 1; i < joints.Count; ++i)
+            joints[i].Solve(joints[i - 1], constraints[i - 1]);
     }
 
     public void ToTransform()
     {
         // TODO : pour tous les noeuds de la liste appliquer la position au transform : voir ToTransform de IKJoint
+        foreach (IKJoint j in joints)
+        {
+            j.ToTransform();
+        }
     }
 
     public void Check()

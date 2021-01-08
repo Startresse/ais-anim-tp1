@@ -63,7 +63,7 @@ public class IKJoint
         _position = t.position;
         _weight = 0.0f;
 
-        Debug.Log("New IKJoint : " + name);
+        // Debug.Log("New IKJoint : " + name);
     }
 
     public void SetPosition(Vector3 p)
@@ -75,7 +75,10 @@ public class IKJoint
     public void AddPosition(Vector3 p)
     {
         // TODO : ajoute une position à 'position' et incrémente '_weight'
-        _position += p;
+        if (_weight == 0.0f)
+            _position = p;
+        else
+            _position += p;
         _weight++;
     }
 
@@ -92,6 +95,6 @@ public class IKJoint
         // TODO : ajoute une position (avec AddPosition) qui repositionne _position à la distance l
         // en restant sur l'axe entre la position et la position de anchor
         Vector3 direction = (position - anchor.position).normalized;
-        AddPosition(direction * l);
+        AddPosition(anchor.position + l * direction);
     }
 }

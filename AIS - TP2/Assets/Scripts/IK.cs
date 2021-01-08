@@ -61,10 +61,10 @@ public class IK : MonoBehaviour
         if (createChains)
             Start();
 
-        if (Input.GetKeyDown(KeyCode.I))
-        {
+        // if (Input.GetKeyDown(KeyCode.I))
+        // {
             IKOneStep(true);
-        }
+        // }
 
         if (Input.GetKeyDown(KeyCode.C))
         {
