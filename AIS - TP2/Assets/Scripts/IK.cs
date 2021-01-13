@@ -39,7 +39,18 @@ public class IK : MonoBehaviour
             // Keep track of root
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.transform.position = rootNode.transform.position;
-            sphere.GetComponent<Renderer>().material = Resources.Load("Dev_Orange", typeof(Material)) as Material;
+            // sphere.GetComponent<Renderer>().material = Resources.Load("Dev_Orange", typeof(Material)) as Material;
+
+            // Attach cylinders
+            Transform endTarget = srcNode;
+
+            while (endTarget.parent != null)
+            {
+                GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                cylinder.AddComponent<IKInterpolCylinder>().root = endTarget.parent;
+                cylinder.GetComponent<IKInterpolCylinder>().tail = endTarget;
+                endTarget = endTarget.parent;
+            }
 
             // TODO : 
             // Création des chaines : une chaine cinématique est un chemin entre deux nœuds carrefours.
