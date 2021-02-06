@@ -26,7 +26,6 @@ public class IK : MonoBehaviour
     public int nb_ite = 10;
 
 
-
     void Start()
     {
 
@@ -42,27 +41,55 @@ public class IK : MonoBehaviour
             // sphere.GetComponent<Renderer>().material = Resources.Load("Dev_Orange", typeof(Material)) as Material;
 
             // Attach cylinders
-            Transform endTarget = srcNode[0];
-            while (endTarget.parent != null)
-            {
-                GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                IKInterpolCylinder cyl = cylinder.AddComponent<IKInterpolCylinder>();
-                cyl.root = endTarget.parent;
-                cyl.tail = endTarget;
-                endTarget = endTarget.parent;
-            }
+            // createCylinders(rootNode.transform, srcNode[0]);
 
             // TODO : 
             // Création des chaines : une chaine cinématique est un chemin entre deux nœuds carrefours.
             // Dans la 1ere question, une unique chaine sera suffisante entre srcNode et rootNode.
-            chains.Add(new IKChain(srcNode[0], rootNode.transform, targetNode[0]));
+            // chains.Add(new IKChain(srcNode[0], rootNode.transform, targetNode[0]));
 
             // TODO-2 : Pour parcourir tous les transform d'un arbre d'Unity vous pouvez faire une fonction récursive
-            // ou utiliser GetComponentInChildren comme ceci :
-            // foreach (Transform tr in gameObject.GetComponentsInChildren<Transform>())
+            for (int i = 0; i < srcNode.Length; ++i)
+                createSubChain(rootNode.transform, srcNode[i], targetNode[i]);
 
 
             // TODO-2 : Dans le cas où il y a plusieurs chaines, fusionne les IKJoint entre chaque articulation.
+        }
+
+    }
+
+    List<KeyValuePair<Transform, Transform>> createdChains = new List<KeyValuePair<Transform, Transform>>();
+    void createSubChain(Transform parent, Transform src, Transform target)
+    {
+        Transform chainBegin = src.parent;
+        while (chainBegin != parent && chainBegin.parent != null && chainBegin.childCount <= 1)
+        {
+            chainBegin = chainBegin.parent;
+        }
+
+        var pair = new KeyValuePair<Transform, Transform>(chainBegin, src);
+        if (createdChains.Contains(pair))
+            return;
+        createdChains.Add(pair);
+
+        chains.Add(new IKChain(src, chainBegin, target));
+
+        createCylinders(chainBegin, src);
+        
+        if (chainBegin != parent)
+            createSubChain(parent, chainBegin, chainBegin);
+    }
+
+    void createCylinders(Transform parent, Transform child)
+    {
+        Transform endTarget = child;
+        while (endTarget != parent && endTarget.parent != null)
+        {
+            GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            IKInterpolCylinder cyl = cylinder.AddComponent<IKInterpolCylinder>();
+            cyl.root = endTarget.parent;
+            cyl.tail = endTarget;
+            endTarget = endTarget.parent;
         }
 
     }
@@ -72,10 +99,7 @@ public class IK : MonoBehaviour
         if (createChains)
             Start();
 
-        // if (Input.GetKeyDown(KeyCode.I))
-        // {
-            IKOneStep(true);
-        // }
+        IKOneStep(true);
 
         if (Input.GetKeyDown(KeyCode.C))
         {
