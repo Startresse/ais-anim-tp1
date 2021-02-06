@@ -16,17 +16,16 @@ public class IKTargetMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.A))
-            transform.position += Vector3.left * speed;
-        if (Input.GetKey(KeyCode.D))
-            transform.position += Vector3.right * speed;
-        if (Input.GetKey(KeyCode.W))
-            transform.position += Vector3.forward * speed;
-        if (Input.GetKey(KeyCode.S))
-            transform.position += Vector3.back * speed;
+        float up_down_mvt = 0f;
         if (Input.GetKey(KeyCode.Space))
-            transform.position += Vector3.up * speed;
+            up_down_mvt += 1f;
         if (Input.GetKey(KeyCode.LeftShift))
-            transform.position += Vector3.down * speed;
+            up_down_mvt -= 1f;
+
+        transform.position += speed * new Vector3(
+            Input.GetAxisRaw("Horizontal"),
+            up_down_mvt,
+            Input.GetAxisRaw("Vertical")
+        );
     }
 }

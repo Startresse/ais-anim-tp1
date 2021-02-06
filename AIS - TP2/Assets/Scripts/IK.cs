@@ -11,10 +11,10 @@ public class IK : MonoBehaviour
     public GameObject rootNode = null;
 
     // Un transform (noeud) (probablement une feuille) qui devra arriver sur targetNode
-    public Transform srcNode = null;
+    public Transform[] srcNode = null;
 
     // Le transform (noeud) cible pour srcNode
-    public Transform targetNode = null;
+    public Transform[] targetNode = null;
 
     // Si vrai, recréer toutes les chaines dans Update
     public bool createChains = true;
@@ -42,20 +42,20 @@ public class IK : MonoBehaviour
             // sphere.GetComponent<Renderer>().material = Resources.Load("Dev_Orange", typeof(Material)) as Material;
 
             // Attach cylinders
-            Transform endTarget = srcNode;
-
+            Transform endTarget = srcNode[0];
             while (endTarget.parent != null)
             {
                 GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                cylinder.AddComponent<IKInterpolCylinder>().root = endTarget.parent;
-                cylinder.GetComponent<IKInterpolCylinder>().tail = endTarget;
+                IKInterpolCylinder cyl = cylinder.AddComponent<IKInterpolCylinder>();
+                cyl.root = endTarget.parent;
+                cyl.tail = endTarget;
                 endTarget = endTarget.parent;
             }
 
             // TODO : 
             // Création des chaines : une chaine cinématique est un chemin entre deux nœuds carrefours.
             // Dans la 1ere question, une unique chaine sera suffisante entre srcNode et rootNode.
-            chains.Add(new IKChain(srcNode, rootNode.transform, targetNode));
+            chains.Add(new IKChain(srcNode[0], rootNode.transform, targetNode[0]));
 
             // TODO-2 : Pour parcourir tous les transform d'un arbre d'Unity vous pouvez faire une fonction récursive
             // ou utiliser GetComponentInChildren comme ceci :
