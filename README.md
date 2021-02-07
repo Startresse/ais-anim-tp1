@@ -12,3 +12,7 @@ la partie C n'a pas été implémentée par manque de temps.
 ## Video
 
 le vidéo : https://youtu.be/Rmleh3eQVkQ
+
+## GitHub
+
+le projet est disponible sur gitHub : https://github.com/Startresse/ais-anim-tp1
