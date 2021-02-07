@@ -25,19 +25,21 @@ public class IK : MonoBehaviour
     // Nombre d'itération de l'algo à chaque appel
     public int nb_ite = 10;
 
+    public bool cylinder = true;
 
     void Start()
     {
 
         if (createChains)
         {
-            Debug.Log("(Re)Create CHAIN");
-
             createChains = false;
 
             // Keep track of root
-            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.transform.position = rootNode.transform.position;
+            if (cylinder)
+            {
+                GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                sphere.transform.position = rootNode.transform.position;
+            }
             // sphere.GetComponent<Renderer>().material = Resources.Load("Dev_Orange", typeof(Material)) as Material;
 
             // Attach cylinders
@@ -49,36 +51,55 @@ public class IK : MonoBehaviour
             // chains.Add(new IKChain(srcNode[0], rootNode.transform, targetNode[0]));
 
             // TODO-2 : Pour parcourir tous les transform d'un arbre d'Unity vous pouvez faire une fonction récursive
-            for (int i = 0; i < srcNode.Length; ++i)
-                createSubChain(rootNode.transform, srcNode[i], targetNode[i]);
-
+            // for (int i = 0; i < srcNode.Length; ++i)
+            foreach (Transform child in rootNode.transform)
+                newCreateSubChains(rootNode.transform, child);
 
             // TODO-2 : Dans le cas où il y a plusieurs chaines, fusionne les IKJoint entre chaque articulation.
+            foreach (IKChain chain in chains) // brute force in O(n) but only called on creation so ok...
+            {
+                foreach (IKChain chainSec in chains)
+                {
+                    if (chain == chainSec)
+                        continue;
+
+                    chain.Merge(chainSec.First());
+                    chain.Merge(chainSec.Last());
+                }
+            }
         }
 
     }
 
-    List<KeyValuePair<Transform, Transform>> createdChains = new List<KeyValuePair<Transform, Transform>>();
-    void createSubChain(Transform parent, Transform src, Transform target)
+    private int index = 0;
+    void newCreateSubChains(Transform root, Transform child)
     {
-        Transform chainBegin = src.parent;
-        while (chainBegin != parent && chainBegin.parent != null && chainBegin.childCount <= 1)
+        while (child != null && child.childCount == 1)
+            child = child.GetChild(0);
+        
+        if (child.childCount == 0)
         {
-            chainBegin = chainBegin.parent;
+            if (root == rootNode.transform)
+                chains.Add(new IKChain(child, root, targetNode[index++]));
+            else
+                chains.Add(new IKChain(child, null, targetNode[index++]));
+        }
+        else if (child.childCount > 1)
+        {
+            foreach (Transform children in child.transform)
+            {
+                newCreateSubChains(child, children);
+            }
+            if (root == rootNode.transform)
+                chains.Add(new IKChain(child, root, null));
+            else
+                chains.Add(new IKChain(child, null, null));
         }
 
-        var pair = new KeyValuePair<Transform, Transform>(chainBegin, src);
-        if (createdChains.Contains(pair))
-            return;
-        createdChains.Add(pair);
-
-        chains.Add(new IKChain(src, chainBegin, target));
-
-        createCylinders(chainBegin, src);
-        
-        if (chainBegin != parent)
-            createSubChain(parent, chainBegin, chainBegin);
+        if (cylinder)
+            createCylinders(root, child);
     }
+               
 
     void createCylinders(Transform parent, Transform child)
     {
@@ -91,7 +112,6 @@ public class IK : MonoBehaviour
             cyl.tail = endTarget;
             endTarget = endTarget.parent;
         }
-
     }
 
     void Update()
@@ -118,27 +138,26 @@ public class IK : MonoBehaviour
     void IKOneStep(bool down)
     {
         int j;
-
         for (j = 0; j < nb_ite; ++j)
         {
+            // TODO : IK Backward (remontée), appeler la fonction Backward de IKChain 
+            // sur toutes les chaines cinématiques.
+            for (int i = 0; i < chains.Count; ++i)
+                chains[i].Backward();
+
+            // TODO : appliquer les positions des IKJoint aux transform en appelant ToTransform de IKChain
             foreach (IKChain chain in chains)
-            {
-                // TODO : IK Backward (remontée), appeler la fonction Backward de IKChain 
-                // sur toutes les chaines cinématiques.
-                chain.Backward();
-
-                // TODO : appliquer les positions des IKJoint aux transform en appelant ToTransform de IKChain
                 chain.ToTransform();
 
-                // IK Forward (descente), appeler la fonction Forward de IKChain 
-                // sur toutes les chaines cinématiques.
-                chain.Forward();
+            // IK Forward (descente), appeler la fonction Forward de IKChain 
+            // sur toutes les chaines cinématiques.
+            for (int i = chains.Count - 1; i >= 0; --i)
+                chains[i].Forward();
 
-                // TODO : appliquer les positions des IKJoint aux transform en appelant ToTransform de IKChain
+            // TODO : appliquer les positions des IKJoint aux transform en appelant ToTransform de IKChain
+            foreach (IKChain chain in chains)
                 chain.ToTransform();
-            }
         }
-
     }
 
 }

@@ -62,8 +62,6 @@ public class IKJoint
         _transform = t;
         _position = t.position;
         _weight = 0.0f;
-
-        // Debug.Log("New IKJoint : " + name);
     }
 
     public void SetPosition(Vector3 p)

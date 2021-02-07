@@ -154,8 +154,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rootNode: {fileID: 261752525}
-  srcNode: {fileID: 737474794}
-  targetNode: {fileID: 1485258110}
+  srcNode:
+  - {fileID: 737474794}
+  targetNode:
+  - {fileID: 1485258110}
   createChains: 1
   nb_ite: 10
 --- !u!135 &261752527
