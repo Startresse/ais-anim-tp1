@@ -1,4 +1,4 @@
-# ais-anim-tp1
+# ais-anim-tp1 - Uni project - French
 
 Les tps sont dans 2 projets unity différents.
 Les scènes devraient s'ouvrir sans soucis avec tout ce qu'il faut pour tester le code dedans.
